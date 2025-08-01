@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pranjal Das - Advanced Cyberpunk Terminal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: #0a0a0a;
+            color: #00ff88;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Enhanced animated background */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 136, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 136, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 60% 80%, rgba(255, 136, 0, 0.1) 0%, transparent 50%);
+            animation: pulse 6s ease-in-out infinite alternate;
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 25s linear infinite;
+        }
+        
+        /* Sci-fi HUD overlay */
+        .hud-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .hud-corner {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .hud-corner.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+            clip-path: polygon(0 0, 70% 0, 70% 2px, 2px 2px, 2px 70%, 0 70%);
+        }
+        
+        .hud-corner.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+            clip-path: polygon(30% 0, 100% 0, 100% 70%, calc(100% - 2px) 70%, calc(100% - 2px) 2px, 30% 2px);
+        }
+        
+        .hud-corner.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+            clip-path: polygon(0 30%, 0 100%, 70% 100%, 70% calc(100% - 2px), 2px calc(100% - 2px), 2px 30%);
+        }
+        
+        .hud-corner.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+            clip-path: polygon(30% 30%, calc(100% - 2px) 30%, calc(100% - 2px) calc(100% - 2px), 30% calc(100% - 2px), 30% 100%, 100% 100%, 100% 30%);
+        }
+        
+        /* System status indicators */
+        .system-status {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .status-indicator {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff88;
+            padding: 5px 10px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0% 50%);
+            position: relative;
+        }
+        
+        .status-indicator.active::before {
+            content: '';
+            position: absolute;
+            left: 5px; /* Adjusted position */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+        
+        .status-indicator.warning {
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+        
+        .status-indicator.warning.active::before {
+            background: #ffaa00;
+        }
+        
+        .status-indicator.danger {
+            border-color: #ff0044;
+            color: #ff0044;
+        }
+        
+        .status-indicator.danger.active::before {
+            background: #ff0044;
+        }
+        
+        /* Sci-fi Elements Container */
+        .sci-fi-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .sci-fi-element {
+            position: absolute;
+            opacity: 0.25; /* Slightly more visible */
+            font-family: 'Share Tech Mono', monospace;
+            animation: float 20s infinite linear;
+        }
+        
+        /* NEW AND UPGRADED SCI-FI ELEMENTS */
+
+        /* Spaceship Icons */
+        .spaceship-icon {
+            font-size: 30px;
+            color: #00aaff;
+            filter: drop-shadow(0 0 5px #00aaff);
+        }
+        
+        /* Planet & Celestial Icons */
+        .celestial-icon {
+            font-size: 28px;
+            color: #aaff00;
+            filter: drop-shadow(0 0 5px #aaff00);
+        }
+        
+        /* Tech & UI Icons */
+        .tech-icon {
+            font-size: 26px;
+            color: #ffaa00;
+            filter: drop-shadow(0 0 5px #ffaa00);
+        }
+
+        /* Abstract Logo Icons */
+        .logo-icon {
+            font-size: 32px;
+            color: #ff00ff;
+            filter: drop-shadow(0 0 5px #ff00ff);
+        }
+
+        /* Enhanced Warning/Danger Banners */
+        .warning-banner {
+            border: 2px solid;
+            padding: 8px 25px;
+            font-size: 12px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.9);
+            text-transform: uppercase;
+            position: relative;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .warning-banner.danger {
+            border-color: #ff0044;
+            color: #ff0044;
+            clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+        }
+
+        .warning-banner.caution {
+            border-color: #ffaa00;
+            color: #ffaa00;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+        }
+        
+        .warning-banner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(60deg, transparent, transparent 3px, rgba(255, 255, 255, 0.05) 3px, rgba(255, 255, 255, 0.05) 6px);
+            pointer-events: none;
+        }
+        
+        /* Enhanced Prototype/Info Frame */
+        .info-frame {
+            border: 2px solid #00ffff;
+            background: rgba(0, 20, 25, 0.9);
+            padding: 15px;
+            position: relative;
+            min-width: 200px;
+            color: #00ffff;
+            clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+        }
+
+        .info-frame-title {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            color: #00ff88;
+        }
+
+        .info-frame-text {
+            font-size: 9px;
+            line-height: 1.3;
+        }
+        
+        .info-frame::before {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            width: 40px;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, #00ffff, #00ffff 2px, transparent 2px, transparent 4px);
+        }
+
+        /* Reticle/Targeting Icon */
+        .reticle-icon {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #00ff88;
+            border-radius: 50%;
+            position: relative;
+        }
+        .reticle-icon::before, .reticle-icon::after {
+            content: '';
+            position: absolute;
+            background: #00ff88;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .reticle-icon::before {
+            width: 80%;
+            height: 2px;
+        }
+        .reticle-icon::after {
+            width: 2px;
+            height: 80%;
+        }
+
+        /* Keyframes */
+        @keyframes progress {
+            0%, 100% { width: 25%; }
+            50% { width: 85%; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.25; }
+            90% { opacity: 0.25; }
+            100% { transform: translateY(-100px) translateX(100px) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Enhanced glitch title */
+        .glitch-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            position: relative;
+            color: #00ff88;
+            animation: glitch 3s infinite;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+        
+        .glitch-title::before,
+        .glitch-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch-title::before {
+            animation: glitch-1 0.7s infinite;
+            color: #ff0088;
+            z-index: -1;
+        }
+        
+        .glitch-title::after {
+            animation: glitch-2 0.7s infinite;
+            color: #0088ff;
+            z-index: -2;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+        }
+        
+        @keyframes glitch-1 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(3px, -3px); }
+            40% { transform: translate(-3px, 3px); }
+            60% { transform: translate(-3px, -3px); }
+            80% { transform: translate(3px, 3px); }
+        }
+        
+        @keyframes glitch-2 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(-3px, -3px); }
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #00ff88;
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: 3px;
+            position: relative;
+        }
+        
+        .subtitle::after {
+            content: '_';
+            animation: blink 1s infinite;
+        }
+        
+        .roles {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 50px;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+        
+        .role {
+            color: #00ffff;
+            position: relative;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+            padding: 5px 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+            background: rgba(0, 255, 255, 0.05);
+        }
+        
+        .role::before {
+            content: "▶";
+            margin-right: 8px;
+            color: #00ffff;
+            font-size: 10px;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #003d1a;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+        
+        .card:hover::before {
+            animation: shine 0.8s ease-in-out;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+                opacity: 0;
+            }
+        }
+        
+        .card:hover {
+            border-color: #00ff88;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 136, 0.4),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        .card-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
+        }
+        
+        .card-desc {
+            font-size: 13px;
+            color: #00bfff;
+            line-height: 1.5;
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.7);
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #00aa55;
+            text-align: center;
+        }
+        
+        /* Content sections */
+        .content-section {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            padding: 100px 50px 50px;
+            overflow-y: auto;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            background: none;
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-btn:hover {
+            background: #00ff88;
+            color: #0a0a0a;
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+        
+        .section-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
+        }
+        
+        .section-text {
+            font-size: 16px;
+            line-height: 1.9;
+            color: #00cc66;
+            margin-bottom: 25px;
+            font-family: 'Share Tech Mono', monospace;
+            text-shadow: 0 0 10px rgba(0, 204, 102, 0.5);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 20px;
+            }
+            
+            .roles {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .content-section {
+                padding: 80px 20px 30px;
+            }
+            
+            .close-btn {
+                right: 20px;
+            }
+            
+            .system-status {
+                display: none; /* Hide complex status on small screens */
+            }
+            
+            .hud-corner {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .glitch-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-bg"></div>
+    <div class="grid-overlay"></div>
+    
+    <!-- HUD Overlay -->
+    <div class="hud-overlay">
+        <div class="hud-corner top-left"></div>
+        <div class="hud-corner top-right"></div>
+        <div class="hud-corner bottom-left"></div>
+        <div class="hud-corner bottom-right"></div>
+    </div>
+    
+    <!-- System Status -->
+    <div class="system-status">
+        <div class="status-indicator active">System Online</div>
+        <div class="status-indicator warning active">Neural Link</div>
+        <div class="status-indicator danger active">Quantum Core</div>
+        <div class="status-indicator active">AI Ready</div>
+    </div>
+    
+    <div class="sci-fi-elements" id="sciFiElements"></div>
+    
+    <div class="container">
+        <h1 class="glitch-title" data-text="\\ PRANJAL DAS // QUANTUM-CYBER TERMINAL">\\ PRANJAL DAS //<br>QUANTUM-CYBER TERMINAL</h1>
+        <p class="subtitle">ACCESS_GRANTED >> NEURAL_LINK_ACTIVE</p>
+        
+        <div class="roles">
+            <span class="role">Quantum Developer</span>
+            <span class="role">Neural Hacker</span>
+            <span class="role">Digital Architect</span>
+            <span class="role">AI Pioneer</span>
+            <span class="role">Empire Builder</span>
+          </div> 
+       
+     <!-- In your MAIN portfolio html file -->
+            <div class="card" onclick="window.location.href='https://iPranjalDas.github.io/Projects/'">
+                 <div class="card-icon">🧠</div>
+                 <div class="card-title">Projects</div>
+                 <div class="card-desc">All my creations & digital experiments.</div>
+            </div>
+            
+            <div class="card" onclick="openSection('biography')">
+                <div class="card-icon">📄</div>
+                <div class="card-title">Biography</div>
+                <div class="card-desc">The discomfort journey. How I became this.</div>
+            </div>
+            
+            <div class="card" onclick="openSection('ai-tools')">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">AI Tools</div>
+                <div class="card-desc">My stack, logic, and tools I use daily.</div>
+            </div>
+            
+            <div class="card" onclick="openSection('vault')">
+                <div class="card-icon">🔐</div>
+                <div class="card-title">Vault</div>
+                <div class="card-desc">(Private) Personal logs, secrets, and progress.</div>
+            </div>
+            
+             <div class="card" onclick="window.location.href='https://discord.com/invite/XC9ESAXBsq'">
+                <div class="card-icon">🎮</div>
+                <div class="card-title">Discord</div>
+                <div class="card-desc">Join our community to take part in upcoming projects "INFERICS".</div>
+            </div>
+            
+            <div class="card" onclick="openSection('snippets')">
+                <div class="card-icon">📁</div>
+                <div class="card-title">Snippets</div>
+                <div class="card-desc">Useful codes and reusable scripts.</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2025 Pranjal Das. All rights reserved.
+        </div>
+    </div>
+    
+
+    <!-- Content Sections -->
+    <div id="projects" class="content-section">
+        <button class="close-btn" onclick="closeSection()">×</button>
+        <div class="section-content">
+            <h2 class="section-title">Projects</h2>
+            <p class="section-text">All my creations & digital experiments. Welcome to my digital laboratory where innovation meets functionality. Each project represents countless hours of coding, debugging, and perfecting solutions that push the boundaries of what's possible.</p>
+            <p class="section-text">From AI-powered applications to full-stack web solutions, my projects showcase a diverse range of technologies and creative problem-solving approaches. Every line of code tells a story of passion, persistence, and the relentless pursuit of digital excellence.</p>
+        </div>
+    </div>
+
+    <div id="biography" class="content-section">
+        <button class="close-btn" onclick="closeSection()">×</button>
+        <div class="section-content">
+            <h2 class="section-title">Biography</h2>
+            <p class="section-text">The discomfort journey. How I became this. My path through the digital realm has been marked by countless late nights, breakthrough moments, and the constant drive to evolve. From humble beginnings to becoming a self-made developer, every challenge has shaped who I am today.</p>
+            <p class="section-text">This journey isn't just about coding—it's about transformation, growth, and the relentless pursuit of mastery. Each project, each failure, and each success has contributed to building the empire you see today. Welcome to my story of digital evolution.</p>
+        </div>
+    </div>
+    <div id="ai-tools" class="content-section">
+        <button class="close-btn" onclick="closeSection()">×</button>
+        <div class="section-content">
+            <h2 class="section-title">AI Tools</h2>
+            <p class="section-text">My stack, logic, and tools I use daily. Step into my digital arsenal where artificial intelligence meets practical application. These tools represent the cutting edge of AI technology, carefully selected and crafted to maximize productivity and innovation.</p>
+            <p class="section-text">• Neural Network Architectures - Custom-built AI models<br>• Machine Learning Pipelines - Automated systems for data<br>• AI-Powered Development Tools - Intelligent coding assistants<br>• Predictive Analytics Suite - Advanced forecasting tools</p>
+        </div>
+    </div>
+    <div id="vault" class="content-section">
+        <button class="close-btn" onclick="closeSection()">×</button>
+        <div class="section-content">
+            <h2 class="section-title">Vault</h2>
+            <p class="section-text">(Private) Personal logs, secrets, and progress. This secure digital vault contains my most valuable insights, private projects, and personal development journey. Access to this section requires special permissions and represents the inner workings of my digital empire.</p>
+            <p class="section-text">Here lies the raw truth of the journey—unfiltered thoughts, experimental code, failed attempts, and breakthrough moments that shaped my evolution. This is where the real magic happens, away from public eyes.</p>
+        </div>
+    </div>
+    <div id="discord" class="content-section">
+        <button class="close-btn" onclick="closeSection()">×</button>
+        <div class="section-content">
+            <h2 class="section-title">Discord</h2>
+            <p class="section-text">Join my server and digital community. Connect with fellow developers, AI enthusiasts, and digital pioneers in my exclusive Discord server. This is where ideas are born, collaborations flourish, and the future of technology is discussed.</p>
+            <p class="section-text">🎮 Gaming Sessions<br>💬 Developer Chat<br>🤖 AI Experiments<br>📚 Learning Resources</p>
+        </div>
+    </div>
+    <div id="snippets" class="content-section">
+        <button class="close-btn" onclick="closeSection()">×</button>
+        <div class="section-content">
+            <h2 class="section-title">Snippets</h2>
+            <p class="section-text">Useful codes and reusable scripts. My collection of battle-tested code snippets, utility functions, and reusable components that have proven their worth in real-world applications. These are the building blocks of digital empires.</p>
+            <p class="section-text">Each snippet represents a solution to a common problem, optimized for performance and reliability. From algorithms that power AI models to utility functions that streamline development workflows, this repository is a goldmine of practical programming wisdom.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Open/close section functions
+        function openSection(sectionId) {
+            document.getElementById(sectionId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSection() {
+            document.querySelector('.content-section.active')?.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Event listeners for closing sections
+        document.addEventListener('keydown', e => e.key === 'Escape' && closeSection());
+        document.addEventListener('click', e => e.target.classList.contains('content-section') && closeSection());
+        
+        // UPGRADED Sci-Fi Background Element Creation
+        function createSciFiElements() {
+            const container = document.getElementById('sciFiElements');
+            if (!container) return;
+
+            // Expanded list of elements based on images and sci-fi tropes
+            const elements = [
+                { type: 'icon', class: 'spaceship-icon', content: '➤' }, // Simple fighter
+                { type: 'icon', class: 'spaceship-icon', content: '⮿' }, // UFO
+                { type: 'icon', class: 'spaceship-icon', content: '⯅' }, // Advanced fighter
+                { type: 'icon', class: 'celestial-icon', content: '🪐' }, // Planet with rings
+                { type: 'icon', class: 'celestial-icon', content: '☄' }, // Comet
+                { type: 'icon', class: 'celestial-icon', content: '◎' }, // Gas giant
+                { type: 'icon', class: 'celestial-icon', content: '✶' }, // Star
+                { type: 'icon', class: 'tech-icon', content: '📡' }, // Satellite Dish
+                { type: 'icon', class: 'tech-icon', content: '🧑‍🚀' }, // Astronaut
+                { type: 'icon', class: 'tech-icon', content: '⚙' }, // Gear/Cog
+                { type: 'icon', class: 'logo-icon', content: '❖' }, // Abstract Logo 1
+                { type: 'icon', class: 'logo-icon', content: '◈' }, // Abstract Logo 2
+                { type: 'icon', class: 'logo-icon', content: 'ᛝ' }, // Abstract Logo 3
+                { type: 'banner', class: 'danger', text: 'DANGER' },
+                { type: 'banner', class: 'danger', text: 'ACCESS DENIED' },
+                { type: 'banner', class: 'caution', text: 'WARNING' },
+                { type: 'banner', class: 'caution', text: 'CAUTION' },
+                { type: 'info', title: 'SYSTEM_LOG', text: 'STATUS: NOMINAL<br>CORE_TEMP: 35.7C' },
+                { type: 'info', title: 'PROTOTYPE_7', text: 'UNIT: SUPER-CAPACITOR<br>CHARGE: 98.7%' },
+                { type: 'reticle' }
+            ];
+            
+            function createElement() {
+                const elementDiv = document.createElement('div');
+                elementDiv.className = 'sci-fi-element';
+                
+                const randomElement = elements[Math.floor(Math.random() * elements.length)];
+                
+                switch(randomElement.type) {
+                    case 'icon':
+                        elementDiv.innerHTML = `<div class="${randomElement.class}">${randomElement.content}</div>`;
+                        break;
+                    case 'banner':
+                        elementDiv.innerHTML = `<div class="warning-banner ${randomElement.class}">${randomElement.text}</div>`;
+                        break;
+                    case 'info':
+                        elementDiv.innerHTML = `<div class="info-frame"><div class="info-frame-title">${randomElement.title}</div><div class="info-frame-text">${randomElement.text}</div></div>`;
+                        break;
+                    case 'reticle':
+                        elementDiv.innerHTML = `<div class="reticle-icon"></div>`;
+                        break;
+                }
+                
+                elementDiv.style.left = Math.random() * 100 + 'vw';
+                elementDiv.style.animationDelay = Math.random() * 20 + 's';
+                elementDiv.style.animationDuration = (15 + Math.random() * 10) + 's';
+                
+                container.appendChild(elementDiv);
+                
+                // Clean up elements after animation finishes
+                setTimeout(() => {
+                    elementDiv.remove();
+                }, 25000);
+            }
+            
+            // Create initial elements and then add more periodically
+            for (let i = 0; i < 15; i++) {
+                setTimeout(createElement, i * 1200);
+            }
+            setInterval(createElement, 2000); // Add a new element every 2 seconds
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createSciFiElements();
+            
+            // Periodically reset glitch animation for more impact
+            const title = document.querySelector('.glitch-title');
+            if (title) {
+                setInterval(() => {
+                    title.style.animation = 'none';
+                    // This forces a reflow, making the animation restart correctly
+                    void title.offsetWidth; 
+                    title.style.animation = '';
+                }, 7000 + Math.random() * 5000);
+            }
+        });
+    </script>
+</body>
+</html>
